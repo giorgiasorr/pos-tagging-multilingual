@@ -48,11 +48,15 @@ def matrix_values(y_true,y_pred,label): # check position of parameter
 ########## Function to calculate Precision & Recall ##########
 def calculate_precision_recall(y_true,y_pred,label):
     values = matrix_values(y_true,y_pred,label)             # call matrix_values to get tp,fp,fn,tn values
+    PrecisionDict = {}
+    RecallDict = {}
+    Final_values = {"Precision":PrecisionDict, "Recall":RecallDict}
+    for i in values:
     # Formula for Precision & Recall 
-    Precision = values[[0][0]][0]/(values[[0][0]][0]+values[[0][0]][1])  #since i stored it in nested list/array this is how we get the values 
-    Recall = values[[0][0]][0]/(values[[0][0]][0]+values[[1][0]][0])    
+        PrecisionDict[i] = values[i][[0][0]][0]/(values[i][[0][0]][0]+values[i][[0][0]][1])  #since i stored it in nested list/array this is how we get the values 
+        RecallDict[i] = values[i][[0][0]][0]/(values[i][[0][0]][0]+values[i][[1][0]][0])    
     # print("True negative",values[[1][0]][1]) 
-    return Precision,Recall
+    return Final_values
 ########## Function to calculate Precision & Recall ##########
 
 
