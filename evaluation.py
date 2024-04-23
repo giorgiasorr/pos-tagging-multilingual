@@ -81,3 +81,16 @@ def calculate_f1score(y_true,y_pred,label):
 
 
 print(calculate_f1score(true_tags,dummy_tags,tag)) #testing function calculate_f1score
+
+
+########## Function to calculate Macro F1_Score ##########
+def macro_average(y_true,y_pred,label):
+    FScores= calculate_f1score(y_true,y_pred,label)
+    total = 0
+    for i in FScores:
+        total = total + FScores[i]
+    macro_F1Score = total / len(FScores)
+    return macro_F1Score
+########## Function to calculate Macro F1_Score ##########
+
+print(macro_average(true_tags,dummy_tags,tag)) #testing function macro_average
