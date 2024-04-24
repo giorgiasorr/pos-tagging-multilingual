@@ -1,3 +1,6 @@
+import collections
+
+
 ########## Temporary Data ##########
 true_tags = ["NN", "DT", "P", "HYP", "NN", "P", "DT","DT"] #correct(GoldStandard data)
 dummy_tags = ["NN", "VB", "P", "P", "DT", "P", "HYP","DT"]  #predicted(Dummy data)
@@ -30,17 +33,13 @@ def matrix_values(y_true,y_pred,label): # check position of parameter
         else:
             print("******\nTHE LENGTH OF CORRECT and PREDICTED LIST IS DIFFERENT\n*****")
         each_tag[label[j]] = [[true_positive, false_positive],[false_negative,true_negative]]
-        # print("True positive1",true_positive)
-        # print("False positive1",false_positive)
-        # print("False negative1",false_negative)
-        # print("True negative1",true_negative)
             
     return each_tag
 ########## Function to get tp,fp,fn,tn values ##########
 
 
 
-print(matrix_values(true_tags,dummy_tags,tag)) #testing function matrix_values
+# print(matrix_values(true_tags,dummy_tags,tag)) #testing function matrix_values
 
 
 
@@ -60,7 +59,7 @@ def calculate_precision_recall(y_true,y_pred,label):
 
 
 
-print(calculate_precision_recall(true_tags,dummy_tags,tag)) #testing function calculate_precision_recall
+# print(calculate_precision_recall(true_tags,dummy_tags,tag)) #testing function calculate_precision_recall
 
 
 
@@ -80,17 +79,28 @@ def calculate_f1score(y_true,y_pred,label):
 
 
 
-print(calculate_f1score(true_tags,dummy_tags,tag)) #testing function calculate_f1score
+# print(calculate_f1score(true_tags,dummy_tags,tag)) #testing function calculate_f1score
 
 
-########## Function to calculate Macro F1_Score ##########
-def macro_average(y_true,y_pred,label):
-    FScores= calculate_f1score(y_true,y_pred,label)
-    total = 0
-    for i in FScores:
-        total = total + FScores[i]
-    macro_F1Score = total / len(FScores)
-    return macro_F1Score
-########## Function to calculate Macro F1_Score ##########
+########## Function to calculate Micro F1_Score ##########
+def micro_average(y_true,y_pred,label):
+    f1score_values = calculate_f1score(y_true,y_pred,label)
+    counter = collections.Counter(y_true)
+    ckeys=counter.keys()
+    frequency = {}
+    frequencyXf1score = {}
+    for i in label:
+        for j in ckeys:
+            if i == j:
+                frequency[i] = ((counter[j]*len(y_true))/100)
+                frequencyXf1score[i] = (((counter[j]*len(y_true))/100)*f1score_values[i])
+    micro_value = 0
+    for i in frequencyXf1score:
+        micro_value = micro_value + frequencyXf1score[i]
+    return micro_value
+    
+########## Function to calculate Micro F1_Score ##########
 
-print(macro_average(true_tags,dummy_tags,tag)) #testing function macro_average
+
+
+# print(micro_average(true_tags,dummy_tags,tag)) #testing function macro_average
