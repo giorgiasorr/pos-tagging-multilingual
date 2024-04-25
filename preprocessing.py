@@ -10,11 +10,6 @@ def preprocess_text(text):
     text = re.sub(r"\s+", " ", text)  # Remove extra whitespaces
     text = text.strip()  # Remove leading/trailing whitespaces
 
-    # Stop word removal
-    stop_words = set(["a", "an", "the", "in", "on", "at", "to", "for", "with", "by", "of", "is", "are", "were", "was", "been", "be", "it", "this", "that", "these", "those", "i", "you", "he", "she", "we", "they", "am", "is", "are", "was", "were", "have", "has", "had", "do", "does", "did", "will", "would", "shall", "should", "can", "could", "may", "might", "must", "about", "above", "below", "between", "under", "over", "into", "onto", "up", "down", "off", "out", "through", "from", "before", "after", "during", "underneath", "inside", "outside", "near", "far", "away", "next", "last", "first", "second", "third", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"])
-    tokens = text.split()
-    tokens = [token for token in tokens if token.lower() not in stop_words]
-
     return tokens
 
 def tokenize(text):
