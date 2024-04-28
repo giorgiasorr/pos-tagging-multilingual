@@ -10,7 +10,3 @@ def initialize_bias():
     bias = random.uniform(0, 1)
     return bias
 
-# how to
-num_features = 10  # Number of features in the data
-weights = initialize_weights(num_features)  # Initialize weights
-bias = initialize_bias()  # Initialize bias
