@@ -1,18 +1,16 @@
 import random
 
 def initialize_weights(num_features):
-  
-    # Initialize weights randomly between in the ranges -1 and 1
-    weights = [random.uniform(-1, 1) for _ in range(num_features)]
+    # Initialize weights with randomly in [0,1]
+    weights = [random.uniform(0, 1) for _ in range(num_features)]
     return weights
 
 def initialize_bias():
-    
-    # Initialize bias randomly between -1 and 1
-    bias = random.uniform(-1, 1)
+    # Initialize bias with a randomly in [0,1]
+    bias = random.uniform(0, 1)
     return bias
 
-# Example
-num_features = 10  # Replace with the actual number of features
-weights = initialize_weights(num_features)
-bias = initialize_bias()
+# how to
+num_features = 10  # Number of features in the data
+weights = initialize_weights(num_features)  # Initialize weights
+bias = initialize_bias()  # Initialize bias
