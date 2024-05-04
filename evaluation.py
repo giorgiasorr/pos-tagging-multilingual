@@ -1,6 +1,7 @@
 import collections
 
 
+
 ########## Temporary Data ##########
 true_tags = ["NN", "DT", "P", "HYP", "NN", "P", "DT","DT"] #correct(GoldStandard data)
 dummy_tags = ["NN", "VB", "P", "P", "DT", "P", "HYP","DT"]  #predicted(Dummy data)
@@ -93,6 +94,8 @@ def macro_average(y_true,y_pred,label):
     return macro_F1Score
 ########## Function to calculate Macro F1_Score ##########
 
+
+
 # print(macro_average(true_tags,dummy_tags,tag)) #testing function macro_average
 
 
@@ -119,3 +122,36 @@ def micro_average(y_true,y_pred,label):
 
 
 # print(micro_average(true_tags,dummy_tags,tag)) #testing function macro_average
+
+
+
+
+def evaluate(test_data, perceptron):
+    correct = 0
+    total = len(test_data)
+    for features, expected_label in test_data:
+        prediction = perceptron.predict(features)
+        if prediction == expected_label:
+            correct += 1
+    accuracy = correct / total * 100
+    return accuracy
+
+# print(evaluate(true_tags,dummy_tags)) #testing function evaluate ## doesn't work because perceptron is not a list 
+
+
+
+############ How to call the accuracy function in any file ############
+### you will need dev_data, dev_predicted_data & test_data variables ###
+
+# Evaluate the model on dev data
+# dev_accuracy = evaluation.evaluate(dev_data, perceptron)
+# print(f"Accuracy on dev data: {dev_accuracy:.2f}%")
+
+# # Evaluate the model on dev-predicted data
+# dev_predicted_accuracy = evaluation.evaluate(dev_predicted_data, perceptron)
+# print(f"Accuracy on dev-predicted data: {dev_predicted_accuracy:.2f}%")
+
+# # Evaluate the model on test data
+# test_accuracy = evaluation.evaluate(test_data, perceptron)
+# print(f"Accuracy on test data: {test_accuracy:.2f}%")
+
