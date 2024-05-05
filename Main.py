@@ -21,7 +21,11 @@ def tokenize_sentence(user_sentence):
 
 # Function to predict POS tags for the input sentence
 def predict_pos_tags(user_sentence, perceptron):
-    features_for_sentence = extract_features(user_sentence)
+    words = tokenize_sentence(user_sentence)
+    features_for_sentence = list()
+    for word in words:
+        features_for_sentence.append(extract_features(word))
+    print((features_for_sentence))
     pos_tags = [] #the prob is here?
     for features in features_for_sentence:
         pos_tag = perceptron.predict(features)
