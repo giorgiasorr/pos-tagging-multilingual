@@ -1,7 +1,12 @@
+import evaluation # type: ignore
+
+
 def contains_digit(s):
     isdigit = str.isdigit
     return any(map(isdigit,s))
 
+
+###   [[('the', 'DT), ('apple', 'NN'...)],[],[]]
 
 train_file = "/Users/mayurideshmukh/Desktop/Team-Lab/data/dev-predicted.col"
 gold_standard_file = "/Users/mayurideshmukh/Desktop/Team-Lab/data/dev.col"
@@ -124,10 +129,19 @@ def apply_transformational_rules(sentences):
             # Apply transformational rules based on context
             if word == 'continued' and i < len(sentence) - 1 and (sentence[i + 1][1] == 'NN' or sentence[i + 1][1] == 'VBG' ):
                 transformed_sentence.append(('continued', 'VBN'))  # 'all' before a DT is likely a predeterminer 
+            # elif word.endswith('ing') :
+            #         transformed_sentence.append((word, 'VBG'))   
+            # elif word.isalpha() and previous_tag == None :
+            #     if word.endswith('s'):
+            #         transformed_sentence.append((word, 'NNPS'))  # 'all' before a DT is likely a predeterminer     
+            #     else:
+            #         transformed_sentence.append((word, 'NNP'))  # 'all' before a DT is likely a predeterminer
             elif previous_tag == 'LS' and word == '-':
                     transformed_sentence.append(('-', 'HYPH'))   
             elif word == '-':
                     transformed_sentence.append(('-', 'HYPH'))
+            elif word == '#':
+                    transformed_sentence.append(('#', '$'))
             elif word == 'Farmers':
                 if previous_tag == 'WRB':
                     transformed_sentence.append(('Farmers', 'NNP'))    
@@ -141,17 +155,18 @@ def apply_transformational_rules(sentences):
                 transformed_sentence.append(('/', 'SYM'))
             elif word == 'to':
                 # Determine tag for 'to' based on previous tag
-                ptags = ['VB', 'VBP', 'MD',  'NN', 'JJ', 'NNS', 'RB']
+                ptags = ['VB', 'VBP', 'MD',  'NN', 'JJ', 'NNS', 'RB', 'VBZ', 'VBD']
                 if previous_tag in ptags and (sentence[i + 1][1] == 'VB' or sentence[i + 1][1] == 'VBZ' or sentence[i + 1][1] == 'VBD'  ):
                     transformed_sentence.append(('to', 'TO'))  # Tag 'to' as infinitive marker preposition if next tag is verb
-                elif previous_tag in ptags and (sentence[i + 1][1] == 'DT' or sentence[i +1][1] ==  'NN'):
+                elif previous_tag in ptags and (sentence[i + 1][1] == 'DT' or sentence[i +1][1] ==  'NN') and sentence[i +2][1] not in ['VB', 'VBZ', 'VBD']:
                     transformed_sentence.append(('to', 'IN'))  # Tag 'to' as infinitive marker preposition if next tag is verb
                 else:
                     transformed_sentence.append(('to', 'TO'))  # Otherwise, tag 'to' as ipreposition
             elif word == 'all' and i < len(sentence) - 1 and (sentence[i + 1][1] == 'DT' or sentence[i + 1][1] == 'PRP$' ):
                 transformed_sentence.append(('all', 'PDT'))  # 'all' before a DT is likely a predeterminer
-            elif word.isdigit() or contains_digit(word):
+            elif word.isdigit() or contains_digit(word) :
                 transformed_sentence.append((word, 'CD'))  # Tag all digits as cardinal numbers
+            
             else:
                 transformed_sentence.append((word, tag))  # Keep original tag if no rule applies
             
@@ -162,7 +177,9 @@ def apply_transformational_rules(sentences):
 
     return transformed_sentences
 
-transformed_predicted_tags = apply_transformational_rules(predicted_parsed)
+transformed_predicted_tags = apply_transformational_rules(predicted_parsed) # test_parse
+#store = []
+# compare 
 
 # # Print corrected sentences after applying rules
 # print("\nCorrected Sentences:")
@@ -177,21 +194,68 @@ errors = detect_errors(transformed_predicted_tags, gold_standard_parsed)
 error_word = []
 # Print detected errors
 for error in errors:
-    print(f"Error: Predicted tag '{error[1]}' for word '{error[0]}' is incorrect; gold standard tag is '{error[2]}'")
+    # print(f"Error: Predicted tag '{error[1]}' for word '{error[0]}' is incorrect; gold standard tag is '{error[2]}'")
     error_word.append(error[0])
 #     if error[0] == '-':
 #         print (error[0], error[1], error[2])
 
     
     
-# from collections import Counter
+from collections import Counter
 # list1=['apple','egg','apple','banana','egg','apple']
-# counts = Counter(error_word)
+counts = Counter(error_word)
 # print(counts)
-print(len(errors))
+# print(len(errors))
 
 
 
+
+
+
+
+
+# print(transformed_predicted_tags)
+
+only_transformed_tags = []
+for i in transformed_predicted_tags:
+    for j,k in i:
+        only_transformed_tags.append(k)
+            
+# print(only_transformed_tags)
+
+
+
+
+
+
+import numpy as np
+from sklearn.metrics import multilabel_confusion_matrix
+import collections
+
+
+########## Read file from IMS #########
+devList = []
+with open("/Users/mayurideshmukh/Desktop/Team-Lab/data/dev.col", "r") as file: 
+    for i in (file):
+        line = i.strip()
+        if line:
+            devList.append(line)
+
+
+only_true_tags = []
+for i in devList:
+    only_true_tags.append(i.split()[1])
+
+
+# print(only_true_tags)
+
+
+
+
+tag = ["NN","VB","DT","TO"]
+
+# print(evaluation.macro_average(only_true_tags,only_transformed_tags,tag))
+# print(evaluation.calculate_f1score(only_true_tags,only_transformed_tags,tag))
 
 
 
