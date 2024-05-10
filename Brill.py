@@ -1,5 +1,12 @@
 import evaluation # type: ignore
+from word2number import w2n
 
+def is_number(word):
+    try:
+        w2n.word_to_num(word)
+        return True
+    except ValueError:
+        return False
 
 def contains_digit(s):
     isdigit = str.isdigit
@@ -69,14 +76,17 @@ def initial_tagger(sentence, word_to_majority_tag):
     
     return tagged_sentence
 
-# sample_sentence = "In an Oct. 19 review of "
-# initial_tags = initial_tagger(sample_sentence, word_to_majority_tag)
-# print(initial_tags)
 
 predicted_parsed = parse_training_data(train_file)
 gold_standard_parsed=parse_training_data(gold_standard_file)
 # print(a)
-# print(build_word_to_tag_dict(a))
+
+
+word_to_tag = build_word_to_tag_dict(predicted_parsed)
+word_to_majority_tag = calculate_majority_class(word_to_tag)
+sample_sentence = "In an Oct. 19 review of "
+initial_tags = initial_tagger(sample_sentence, word_to_majority_tag)
+# print(initial_tags)
 
 
 
@@ -116,7 +126,7 @@ def detect_errors(predicted_tags, gold_standard_tags):
 
 # print(len(errors))
 
-
+number =[]
 
 def apply_transformational_rules(sentences):
     transformed_sentences = []
@@ -136,9 +146,12 @@ def apply_transformational_rules(sentences):
             #         transformed_sentence.append((word, 'NNPS'))  # 'all' before a DT is likely a predeterminer     
             #     else:
             #         transformed_sentence.append((word, 'NNP'))  # 'all' before a DT is likely a predeterminer
-            elif previous_tag == 'LS' and word == '-':
-                    transformed_sentence.append(('-', 'HYPH'))   
-            elif word == '-':
+            elif word.isalpha() and (len(word) == 1 and sentence[i + 1][1] == ':'):
+                transformed_sentence.append((word, 'LS'))   
+            elif  word == '-':
+                if previous_tag == 'LS':
+                    transformed_sentence.append(('-', ':'))   
+                else:
                     transformed_sentence.append(('-', 'HYPH'))
             elif word == '#':
                     transformed_sentence.append(('#', '$'))
@@ -153,6 +166,29 @@ def apply_transformational_rules(sentences):
                 transformed_sentence.append(('}', '-RRB-'))
             elif word == '/':
                 transformed_sentence.append(('/', 'SYM'))
+            # elif word == "'s":
+            #     transformed_sentence.append(("'s", 'VBZ'))
+            elif tag == 'NN':
+                # Rule: NN --> VBP if the preceding tag is 'PRP'
+                if previous_tag == 'PRP':
+                    transformed_sentence.append((word, 'VBP'))
+                # Rule: NN --> JJ if the following tag is 'JJ'
+                elif i + 1 < len(sentence) and sentence[i + 1][1] == 'JJ':
+                    transformed_sentence.append((word, 'JJ'))
+                # Rule: NN --> IN if the preceding tag is '.'
+                elif previous_tag == '.':
+                    transformed_sentence.append((word, 'IN'))
+                else:
+                    transformed_sentence.append((word, tag))  # Keep original tag if no rule applies
+            elif tag == 'NNP':
+                # Rule: NNP --> NN if the tag of words i-3...i-1 is JJ
+                if i >= 3 and all(sentence[i - j][1] == 'JJ' for j in range(1, 4)):
+                    transformed_sentence.append((word, 'NN'))
+                # Rule: NNP --> NNP if the tag of words i+1...i+2 is NNP
+                elif i + 2 < len(sentence) and all(sentence[i + j][1] == 'NNP' for j in range(1, 3)):
+                    transformed_sentence.append((word, 'NNP'))
+                else:
+                    transformed_sentence.append((word, tag))  # Keep original tag if no rule applies
             elif word == 'to':
                 # Determine tag for 'to' based on previous tag
                 ptags = ['VB', 'VBP', 'MD',  'NN', 'JJ', 'NNS', 'RB', 'VBZ', 'VBD']
@@ -161,12 +197,18 @@ def apply_transformational_rules(sentences):
                 elif previous_tag in ptags and (sentence[i + 1][1] == 'DT' or sentence[i +1][1] ==  'NN') and sentence[i +2][1] not in ['VB', 'VBZ', 'VBD']:
                     transformed_sentence.append(('to', 'IN'))  # Tag 'to' as infinitive marker preposition if next tag is verb
                 else:
-                    transformed_sentence.append(('to', 'TO'))  # Otherwise, tag 'to' as ipreposition
+                    transformed_sentence.append(('to', 'IN'))  # Otherwise, tag 'to' as ipreposition
             elif word == 'all' and i < len(sentence) - 1 and (sentence[i + 1][1] == 'DT' or sentence[i + 1][1] == 'PRP$' ):
                 transformed_sentence.append(('all', 'PDT'))  # 'all' before a DT is likely a predeterminer
-            elif word.isdigit() or contains_digit(word) :
+            elif word == 'about' and i > 0 and sentence[i - 1][1] == 'IN':
+                transformed_sentence.append(('about', 'IN'))  # Tag 'about' as IN when it introduces a prepositional phrase
+            elif word in ['he', 'HE','He', 'she', 'SHE','She', 'it', 'IT']:
+                transformed_sentence.append((word, 'PRP'))  # Tag 'he' as PRP (subject pronoun)
+            # elif word in [ 'of', 'OF', 'Of']:
+            #     transformed_sentence.append((word, 'IN'))  # Tag 'he' as PRP (subject pronoun)
+            elif word.isdigit() or contains_digit(word) or is_number(word):
+                number.append(word)
                 transformed_sentence.append((word, 'CD'))  # Tag all digits as cardinal numbers
-            
             else:
                 transformed_sentence.append((word, tag))  # Keep original tag if no rule applies
             
@@ -177,11 +219,9 @@ def apply_transformational_rules(sentences):
 
     return transformed_sentences
 
-transformed_predicted_tags = apply_transformational_rules(predicted_parsed) # test_parse
-#store = []
-# compare 
+transformed_predicted_tags = apply_transformational_rules(predicted_parsed)
 
-# # Print corrected sentences after applying rules
+# Print corrected sentences after applying rules
 # print("\nCorrected Sentences:")
 # for sentence in transformed_predicted_tags:
 #     print(sentence)
@@ -194,7 +234,7 @@ errors = detect_errors(transformed_predicted_tags, gold_standard_parsed)
 error_word = []
 # Print detected errors
 for error in errors:
-    # print(f"Error: Predicted tag '{error[1]}' for word '{error[0]}' is incorrect; gold standard tag is '{error[2]}'")
+    print(f"Error: Predicted tag '{error[1]}' for word '{error[0]}' is incorrect; gold standard tag is '{error[2]}'")
     error_word.append(error[0])
 #     if error[0] == '-':
 #         print (error[0], error[1], error[2])
@@ -204,8 +244,9 @@ for error in errors:
 from collections import Counter
 # list1=['apple','egg','apple','banana','egg','apple']
 counts = Counter(error_word)
-# print(counts)
-# print(len(errors))
+print(counts)
+print(len(errors))
+# print(number)
 
 
 
@@ -214,53 +255,125 @@ counts = Counter(error_word)
 
 
 
-# print(transformed_predicted_tags)
 
-only_transformed_tags = []
-for i in transformed_predicted_tags:
-    for j,k in i:
-        only_transformed_tags.append(k)
+
+
+
+
+
+
+def Final_Brill_tagger(sentence, pos_data):
+
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ################ to test evaluation  ################
+
+
+# # print(transformed_predicted_tags)
+
+# only_transformed_tags = []
+# for i in transformed_predicted_tags:
+#     for j,k in i:
+#         only_transformed_tags.append(k)
             
-# print(only_transformed_tags)
+# # print(only_transformed_tags)
 
 
 
 
 
 
-import numpy as np
-from sklearn.metrics import multilabel_confusion_matrix
-import collections
+# import numpy as np
+# from sklearn.metrics import multilabel_confusion_matrix
+# import collections
 
 
-########## Read file from IMS #########
-devList = []
-with open("/Users/mayurideshmukh/Desktop/Team-Lab/data/dev.col", "r") as file: 
-    for i in (file):
-        line = i.strip()
-        if line:
-            devList.append(line)
+# ########## Read file from IMS #########
+# devList = []
+# with open("/Users/mayurideshmukh/Desktop/Team-Lab/data/dev.col", "r") as file: 
+#     for i in (file):
+#         line = i.strip()
+#         if line:
+#             devList.append(line)
 
 
-only_true_tags = []
-for i in devList:
-    only_true_tags.append(i.split()[1])
+# only_true_tags = []
+# for i in devList:
+#     only_true_tags.append(i.split()[1])
 
 
-# print(only_true_tags)
-
-
-
-
-tag = ["NN","VB","DT","TO"]
-
-# print(evaluation.macro_average(only_true_tags,only_transformed_tags,tag))
-# print(evaluation.calculate_f1score(only_true_tags,only_transformed_tags,tag))
+# # print(only_true_tags)
 
 
 
 
+# tag = ["NN","VB","DT","TO"]
 
+# # print(evaluation.macro_average(only_true_tags,only_transformed_tags,tag))
+# # print(evaluation.calculate_f1score(only_true_tags,only_transformed_tags,tag))
+
+
+
+
+# ################ to test evaluation  ################
 
 
 
