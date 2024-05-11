@@ -812,7 +812,7 @@ errors = detect_errors(annotated_parsed, gold_standard_parsed)
 error_word = []
 # Print detected errors
 for error in errors:
-    print(f"Error: Predicted tag '{error[1]}' for word '{error[0]}' is incorrect; gold standard tag is '{error[2]}'")
+    # print(f"Error: Predicted tag '{error[1]}' for word '{error[0]}' is incorrect; gold standard tag is '{error[2]}'")
     error_word.append(error[0])
 #     if error[0] == '-':
 #         print (error[0], error[1], error[2])
@@ -820,12 +820,382 @@ for error in errors:
     
     
 # print(gold_standard_parsed)
-from collections import Counter
+from collections import Counter, defaultdict
 # list1=['apple','egg','apple','banana','egg','apple']
 counts = Counter(error_word)
 # print(counts)
 print(len(errors))
 # print(number)
+
+
+
+
+
+
+# Compare with annotated corpus and generate confusion matrix
+def generate_confusion_matrix(tagged_corpus, annotated_corpus):
+    # Initialize confusion matrix
+    confusion_matrix = defaultdict(lambda: defaultdict(int))
+
+    # Iterate through each sentence in the tagged corpus and its corresponding annotation
+    for tagged_sentence, annotated_sentence in zip(tagged_corpus, annotated_corpus):
+        # Ensure both sentences have the same length
+        if len(tagged_sentence) != len(annotated_sentence):
+            raise ValueError("Length of tagged and annotated sentences does not match.")
+
+        # Compare each tagged word with its annotation
+        for tagged_word, annotated_word in zip(tagged_sentence, annotated_sentence):
+            tagged_word, tagged_tag = tagged_word
+            annotated_word, annotated_tag = annotated_word
+
+            # Update confusion matrix based on the comparison
+            if tagged_tag != annotated_tag:
+                confusion_matrix[tagged_tag][annotated_tag] += 1
+
+    return confusion_matrix
+
+
+
+# print(generate_confusion_matrix(gold_standard_parsed,annotated_parsed))
+
+
+
+
+# Identify errors by comparing tagged corpus with annotated corpus
+def identify_errors(tagged_corpus, annotated_corpus):
+    errors = []
+    for tagged_sentence, annotated_sentence in zip(tagged_corpus, annotated_corpus):
+        if len(tagged_sentence) != len(annotated_sentence):
+            raise ValueError("Length of tagged and annotated sentences does not match.")
+        for tagged_word, annotated_word in zip(tagged_sentence, annotated_sentence):
+            if tagged_word[1] != annotated_word[1]:
+                errors.append((tagged_word, annotated_word))
+    return errors
+
+# Generate potential transformation patterns (S) for each error
+def generate_potential_patterns(errors):
+    patterns = []
+    for error in errors:
+        # Generate potential transformation patterns based on context
+        # Add each pattern to the list
+        patterns.append(...)
+    return patterns
+
+# Obtain potential contextual transformations (T) from each pattern
+def obtain_potential_transformations(patterns):
+    transformations = []
+    for pattern in patterns:
+        # Generate potential contextual transformations from the pattern
+        # Add each transformation to the list
+        transformations.append(...)
+    return transformations
+
+
+
+
+
+
+
+
+# a = detect_errors(gold_standard_parsed,annotated_parsed)
+# print(generate_potential_patterns(a))
+
+
+
+
+
+from collections import defaultdict
+
+def generate_confusion_matrix(predicted_tags, gold_standard_tags):
+    # Initialize a defaultdict to store counts of tag errors
+    confusion_matrix = defaultdict(lambda: defaultdict(int))
+
+    # Iterate through each sentence's predicted and gold standard tags
+    for sent_pred_tags, sent_gold_tags in zip(predicted_tags, gold_standard_tags):
+        # Iterate through each (word, predicted_tag) and (word, gold_standard_tag) pair
+        for (word_pred, tag_pred), (word_gold, tag_gold) in zip(sent_pred_tags, sent_gold_tags):
+            if tag_pred != tag_gold:
+                # Increment count of errors for the specific (tag_pred, tag_gold) pair
+                confusion_matrix[tag_pred][tag_gold] += 1
+
+    return confusion_matrix
+
+
+def print_confusion_matrix(confusion_matrix):
+    final_matrix = {}
+    # Print the confusion matrix
+    # print("Confusion Matrix:")
+    # print("{:<10} {:<10} {:<10}".format('Predicted', 'Actual', 'Count'))
+    for predicted_tag in confusion_matrix:
+        for gold_standard_tag in confusion_matrix[predicted_tag]:
+            count = confusion_matrix[predicted_tag][gold_standard_tag]
+            # print("{:<10} {:<10} {:<10}".format(predicted_tag, gold_standard_tag, count))
+            final_matrix[predicted_tag] = {gold_standard_tag:count}
+    return final_matrix
+
+# Generate confusion matrix
+conf_matrix = generate_confusion_matrix(annotated_parsed, gold_standard_parsed)
+# conf_matrix = generate_confusion_matrix(predicted_tags, gold_standard_tags)
+
+# Print confusion matrix
+final_matrix_conf = print_confusion_matrix(conf_matrix)
+
+
+
+
+
+
+
+
+
+
+def generate_transformation_patterns(predicted_tags, gold_standard_tags, confusion_matrix):
+    potential_transformations = []
+
+    # Iterate through each (predicted_tag, gold_standard_tag, error_count) in confusion matrix
+    for predicted_tag in confusion_matrix:
+        for gold_standard_tag in confusion_matrix[predicted_tag]:
+            error_count = confusion_matrix[predicted_tag][gold_standard_tag]
+
+            # Generate potential transformation pattern based on error analysis
+            transformation_pattern = {
+                'predicted_tag': predicted_tag,
+                'gold_standard_tag': gold_standard_tag,
+                'error_count': error_count
+            }
+
+            # Append the transformation pattern to list of potential transformations
+            potential_transformations.append(transformation_pattern)
+
+    return potential_transformations
+
+def evaluate_transformation_impact(transformation_pattern, tagged_corpus):
+    # Simulate applying transformation T and calculate reduction in error count
+    predicted_tag = transformation_pattern['predicted_tag']
+    gold_standard_tag = transformation_pattern['gold_standard_tag']
+
+    reduction_in_errors = 0
+
+    # Apply the transformation to the tagged corpus and calculate reduction in errors
+    for sentence in tagged_corpus:
+        for i, (word, tag) in enumerate(sentence):
+            if tag == predicted_tag:
+                # Check context and apply transformation conditionally
+                # For example, change predicted_tag to gold_standard_tag if conditions are met
+                if i > 0 and sentence[i-1][1] == 'DT':  # Example condition: preceded by determiner
+                    sentence[i] = (word, gold_standard_tag)
+                    reduction_in_errors += 1
+
+    return reduction_in_errors
+
+def select_best_transformation(potential_transformations, tagged_corpus):
+    best_transformation = None
+    max_reduction = 0
+
+    # Evaluate each transformation pattern and select the one with the largest reduction in errors
+    for transformation_pattern in potential_transformations:
+        reduction = evaluate_transformation_impact(transformation_pattern, tagged_corpus)
+        if reduction > max_reduction:
+            best_transformation = transformation_pattern
+            max_reduction = reduction
+
+    return best_transformation
+
+# Example usage:
+predicted_tags = [  # Example predicted tags (from Brill tagger)
+    [('The', 'DT'), ('bonds', 'NNS'), ('go', 'VBP'), ('on', 'IN'), ('sale', 'NN'), ('Oct.', 'NNP'), ('19', 'CD'), ('.', '.')],
+    [('The', 'DT'), ('debate', 'NN'), ('over', 'IN'), ('National', 'NNP'), ('Service', 'NNP'), ('has', 'VBZ'), ('begun', 'VBN'), ('again', 'RB'), ('.', '.')]
+]
+
+gold_standard_tags = [  # Example gold standard tags
+    [('The', 'DT'), ('bonds', 'NNS'), ('go', 'VB'), ('on', 'IN'), ('sale', 'NN'), ('Oct.', 'NNP'), ('19', 'CD'), ('.', '.')],
+    [('The', 'DT'), ('debate', 'NN'), ('over', 'IN'), ('National', 'NNP'), ('Service', 'NNP'), ('has', 'VBZ'), ('begun', 'VBN'), ('again', 'RB'), ('.', '.')]
+]
+
+# Example confusion matrix (mock data for illustration)
+confusion_matrix = {
+    'VBP': {'VB': 1},  # Example: predicted 'VBP' (plural verb) should be 'VB' (base verb)
+    'VBZ': {'VBN': 1}  # Example: predicted 'VBZ' (3rd person singular present verb) should be 'VBN' (past participle verb)
+}
+
+# Example tagged corpus (mock data for illustration)
+tagged_corpus = predicted_tags  # Use predicted tags as initial tagged corpus for demonstration
+
+# Step 4: Generate potential transformation patterns
+potential_transformations = generate_transformation_patterns(annotated_parsed, gold_standard_parsed, final_matrix_conf)
+# print(potential_transformations)
+
+# Step 4.2: Select the best transformation based on reduction in errors
+best_transformation = select_best_transformation(potential_transformations, annotated_parsed)
+
+# print("Best Transformation Pattern Selected:")
+# print(best_transformation)
+
+
+
+
+def apply_transformation(transformation_pattern, tagged_corpus):
+    # Apply the selected best transformation pattern to the tagged corpus
+    predicted_tag = transformation_pattern['predicted_tag']
+    gold_standard_tag = transformation_pattern['gold_standard_tag']
+
+    # Modify the tagged_corpus based on the transformation pattern
+    for sentence in tagged_corpus:
+        for i, (word, tag) in enumerate(sentence):
+            if tag == predicted_tag:
+                # Check context and apply transformation conditionally
+                # For example, change predicted_tag to gold_standard_tag if conditions are met
+                if i > 0 and sentence[i-1][1] == 'DT':  # Example condition: preceded by determiner
+                    sentence[i] = (word, gold_standard_tag)
+
+    return tagged_corpus
+
+# Example usage continued from previous code snippet:
+
+# Step 4.2: Select the best transformation based on reduction in errors
+best_transformation = select_best_transformation(potential_transformations, annotated_parsed)
+
+# Step 4.3: Apply the selected best transformation to the tagged corpus
+tagged_corpus = apply_transformation(best_transformation, annotated_parsed)
+print(len(detect_errors(tagged_corpus,gold_standard_parsed)))
+
+
+
+
+print(detect_errors(tagged_corpus,gold_standard_parsed))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # Apply potential transformations and calculate error reduction
+# def calculate_error_reduction(tagged_corpus, annotated_corpus, transformations):
+#     error_reduction = {}
+#     for transformation in transformations:
+#         # Apply transformation to the corpus
+#         transformed_corpus = apply_transformation(tagged_corpus, transformation)
+#         # Calculate reduction in errors
+#         reduction = calculate_error_reduction(tagged_corpus, annotated_corpus)
+#         error_reduction[transformation] = reduction
+#     return error_reduction
+
+# # Select transformation with largest reduction and add it to T
+# def select_transformation(error_reduction):
+#     best_transformation = max(error_reduction, key=error_reduction.get)
+#     return best_transformation
+
+# # Main function
+# def main():
+#     # Load the tagged and annotated corpora
+#     tagged_corpus = [...]  # Your tagged corpus
+#     annotated_corpus = [...]  # Your annotated corpus
+
+#     # Identify errors
+#     errors = identify_errors(tagged_corpus, annotated_corpus)
+
+#     # Generate potential transformation patterns (S)
+#     patterns = generate_potential_patterns(errors)
+
+#     # Obtain potential contextual transformations (T)
+#     transformations = obtain_potential_transformations(patterns)
+
+#     # Apply potential transformations and calculate error reduction
+#     error_reduction = calculate_error_reduction(tagged_corpus, annotated_corpus, transformations)
+
+#     # Select transformation with largest reduction and add it to T
+#     best_transformation = select_transformation(error_reduction)
+
+#     # Add the best transformation to the transformation list (T)
+#     T.append(best_transformation)
+
+# # Execute the main function
+# if _name_ == "_main_":
+#     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def main():
+#     # Load the tagged and annotated corpora
+#     tagged_corpus = [...]  # Your tagged corpus
+#     annotated_corpus = [...]  # Your annotated corpus
+
+#     # Define a threshold k for error reduction
+#     k = 0.05  # Adjust this value as needed
+
+#     # Continue training until no transformation can reduce errors above threshold k
+#     while True:
+#         # Identify errors
+#         errors = identify_errors(tagged_corpus, annotated_corpus)
+
+#         # Generate potential transformation patterns (S)
+#         patterns = generate_potential_patterns(errors)
+
+#         # Obtain potential contextual transformations (T)
+#         transformations = obtain_potential_transformations(patterns)
+
+#         # Apply potential transformations and calculate error reduction
+#         error_reduction = calculate_error_reduction(tagged_corpus, annotated_corpus, transformations)
+
+#         # Select transformation with largest reduction and add it to T
+#         best_transformation = select_transformation(error_reduction)
+
+#         # Check if reduction in tagging errors is above threshold k
+#         reduction = error_reduction.get(best_transformation, 0)
+#         if reduction <= k:
+#             break  # Stop training if reduction is not significant
+
+#         # Apply the best transformation to the corpus
+#         tagged_corpus = apply_transformation(tagged_corpus, best_transformation)
+
+#         # Add the best transformation to the transformation list (T)
+#         T.append(best_transformation)
+
+#     # Training ends when reduction in tagging errors is not significant
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
