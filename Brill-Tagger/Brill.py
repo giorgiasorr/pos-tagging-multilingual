@@ -1,7 +1,13 @@
 import operator
+import sys
 import os
+from pathlib import Path
 import evaluation  # type: ignore
 from word2number import w2n
+
+# filename = os.path.join(dirname, "/data/dev.col")
+print(sys.path[0])
+print(os.path.join(sys.path[0], "data/dev-predicted.col"))
 
 def is_number(word):
     try:
@@ -15,9 +21,9 @@ def contains_digit(s):
     return any(map(isdigit,s))
 
 
-train_file = "/Users/mayurideshmukh/Desktop/Team-Lab/data/dev-predicted.col"
-gold_standard_file = "/Users/mayurideshmukh/Desktop/Team-Lab/data/dev.col"
-L_train_file = "/Users/mayurideshmukh/Desktop/Team-Lab/data/train.col"
+train_file = os.path.join(sys.path[0], "data/dev-predicted.col")
+gold_standard_file = os.path.join(sys.path[0], "data/dev.col")
+L_train_file = os.path.join(sys.path[0], "data/train.col")
 
 
 #### Create a corpus without tags ####
@@ -27,7 +33,7 @@ def create_corpus_C(training_file):
     current_sentence = []
 
     with open(training_file, 'r') as file:
-        with open(r'/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/corpus_without_tags.txt', 'w') as fp:
+        with open(os.path.join(sys.path[0], "data/corpus_without_tags.txt"), 'w') as fp:
             for line in file:
                 if line.strip():  # Non-empty line
                     word, tag = line.split()
@@ -116,7 +122,7 @@ def calculate_possible_tags(word_to_tag):
         # fp.write("%s\n" % all_posible_tags)
     # print(all_posible_tags)
     new_dict = {}
-    with open(r'/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/possible_tags.txt', 'w') as fp:
+    with open(os.path.join(sys.path[0], "data/possible_tags.txt"), 'w') as fp:
         for i in all_posible_tags:
             # print(i , ":", all_posible_tags[i])
             # print(all_posible_tags[i])
@@ -147,8 +153,8 @@ word_to_possible_tags = calculate_possible_tags(word_to_tag)
 
 
 
-All_possible_tags='/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/possible_tags.txt'
-Corpus_without_tags='/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/corpus_without_tags.txt'
+All_possible_tags=os.path.join(sys.path[0], "data/possible_tags.txt")
+Corpus_without_tags=os.path.join(sys.path[0], "data/corpus_without_tags.txt")
 
 
 
@@ -196,7 +202,7 @@ def read_and_map_files(file1_path, file2_path,output_path):
     return mapped_words
 
 
-Annotated_corpus_majority_tags = "/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/annotated_corpus.txt"
+Annotated_corpus_majority_tags = os.path.join(sys.path[0], "data/annotated_corpus.txt")
 mapped_words = read_and_map_files(All_possible_tags, Corpus_without_tags, Annotated_corpus_majority_tags)
 # print(mapped_words)
 
@@ -308,7 +314,7 @@ def apply_transformational_rules(sentences,output_file):
 #### apply rules ####
 
 Annotated_parsed=parse_training_data(Annotated_corpus_majority_tags)
-after_rule_corpus = "/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/after_rule_corpus.txt"
+after_rule_corpus = os.path.join(sys.path[0], "data/after_rule_corpus.txt")
 transformed_predicted_tags = apply_transformational_rules(Annotated_parsed,after_rule_corpus)
 # print(transformed_predicted_tags)
 
