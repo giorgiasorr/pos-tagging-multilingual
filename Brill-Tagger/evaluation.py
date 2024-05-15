@@ -100,23 +100,30 @@ def macro_average(y_true,y_pred,label):
 
 
 
+
 ########## Function to calculate Micro F1_Score ##########
-def micro_average(y_true,y_pred,label):
-    f1score_values = calculate_f1score(y_true,y_pred,label)
-    counter = collections.Counter(y_true)
-    ckeys=counter.keys()
-    frequency = {}
-    frequencyXf1score = {}
-    for i in label:
-        for j in ckeys:
-            if i == j:
-                frequency[i] = ((counter[j]*len(y_true))/100)
-                frequencyXf1score[i] = (((counter[j]*len(y_true))/100)*f1score_values[i])
-    micro_value = 0
-    for i in frequencyXf1score:
-        micro_value = micro_value + frequencyXf1score[i]
-    return micro_value
+def micro_average(y_true, y_pred, labels):
+    values = matrix_values(y_true, y_pred, labels)
+    total_tp = 0
+    total_fp = 0
+    total_fn = 0
+    for label in labels:
+        tp = values[label][0][0]
+        fp = values[label][0][1]
+        fn = values[label][1][0]
+        total_tp += tp
+        total_fp += fp
+        total_fn += fn
+    # Calculate overall precision and recall
+    overall_precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
+    overall_recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
+    # Calculate micro-average F1 score
+    if overall_precision + overall_recall > 0:
+        micro_f1 = 2 * (overall_precision * overall_recall) / (overall_precision + overall_recall)
+    else:
+        micro_f1 = 0
     
+    return micro_f1
 ########## Function to calculate Micro F1_Score ##########
 
 
