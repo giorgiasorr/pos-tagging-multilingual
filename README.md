@@ -13,7 +13,9 @@
 # How to run the file
 
 Brill.py is the main file
+
 evaluation.py is the evaluation file
+
 dev.col, dev-predicted.col, train.col, test.col : Data from IMS server
 
 - keep all of these files in the same folder
