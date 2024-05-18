@@ -1,9 +1,10 @@
 import operator
 import sys
 import os
-import evaluation  # type: ignore
+import evaluation 
 
 def contains_digit(s):
+    "checks whether a word in the corpus contains a number or not such as 400th, 250th ,1400s..."
     isdigit = str.isdigit 
     return any(map(isdigit,s))
 
@@ -16,24 +17,22 @@ L_train_file = os.path.join(sys.path[0], "train.col")
 #### Create a corpus without tags ####
 
 def create_corpus_C(training_file):
+    "reads the test.col line by line and creates a corpus with only words from test.col each empty line represents the end of a sentence."
     sentences = []
     current_sentence = []
 
     with open(training_file, 'r') as file:
         with open(os.path.join(sys.path[0], "corpus_without_tags.txt"), 'w') as fp:
             for line in file:
-                if line.strip():  # Non-empty line
+                if line.strip():  
                     word, tag = line.split()
-                    current_sentence.append((word)) #app the w into s
+                    current_sentence.append((word)) 
                     fp.write("%s\n" % word)
-                else:  # Empty line indicates end of sentence
+                else:  
                     if current_sentence:
-                        #update sentences so sentences is [[..],[..],[..]...]
                         sentences.append(current_sentence)
                         fp.write("%s\n" % "")
                         current_sentence = []
-    
-    # Append the last sentence if it's not empty and doesn't end with an empty line
     if current_sentence:
         sentences.append(current_sentence)
     
@@ -51,6 +50,7 @@ create_corpus_C(train_file)
 #### parse corpus sentence wise ####
 
 def parse_training_data(training_file):
+    "Read corpus, the variable sentence has all the sentences [[..],[..],[..]...]"
     sentences = []
     current_sentence = []
 
@@ -78,6 +78,8 @@ def parse_training_data(training_file):
 #### convert corpus sentence to a word : tag Dictionary ####
 # the : DT 7, NN 2
 def build_word_to_tag_dict(sentences):
+    "Read data from parse_training_data and convert it to a dict, [ example : 'The': {'DT': 205, 'NNP': 2}...]"
+    "Only using this for testing wether the model can perform pos tagging for a sentence"
     word_to_tag = {}
 
     for sentence in sentences:
@@ -95,18 +97,13 @@ def build_word_to_tag_dict(sentences):
 
 
 
-#### calculate possible tags for each word { word : {tagA : no. , tagB : no. ...} ####
-#### using train.col for this because it has a lot of data ####
-
-
-# the : DT :7 : NN 17
+#### calculate possible tags for each word ####
 def calculate_possible_tags(word_to_tag):
+    "Read train.col for this because it has a lot of data, write it in a descending order to a file possible_tags.txt [ example : {'in': {'IN': 560, 'RP': 8, 'RB': 2}}"
     word_to_majority_tag = {}
     all_posible_tags = {}
-    # with open(r'/Users/mayurideshmukh/Desktop/Team-Lab/data/possible_tags.txt', 'w') as fp:
     for word, tag_counts in word_to_tag.items():
         all_posible_tags[word] = tag_counts
-        # print(word, ":",tag_counts)
         majority_tag = max(tag_counts, key=tag_counts.get)
         word_to_majority_tag[word] = majority_tag
     new_dict = {}
@@ -118,7 +115,7 @@ def calculate_possible_tags(word_to_tag):
     return new_dict
 
 
-#### calculate possible tags for each word { word : {tagA : no. , tagB : no. ...} ####
+#### calculate possible tags for each word ####
 
 
 predicted_parsed = parse_training_data(train_file)
@@ -134,8 +131,8 @@ Corpus_without_tags=os.path.join(sys.path[0], "corpus_without_tags.txt")
 #### annotate the corpus with majority tag ####
 
 def read_and_map_files(file1_path, file2_path,output_path):
-    # Dictionary to store mappings from file 1
-    word_to_tag = {}
+    "read both possible_tags.txt and corpus_without_tags.txt. Annotate the corpus_without_tags with the most frequent tag for each word from possible_tags. Assign UNK (unknown) tag for unknown words"
+    word_to_tag = {} # Dictionary to store mappings from file 1
 
     # Read and parse file 1
     with open(file1_path, 'r') as file1:
@@ -144,7 +141,6 @@ def read_and_map_files(file1_path, file2_path,output_path):
             word = list(entry.keys())[0] # take only the words
             tag_dict = entry[word]  # take all the values
             first_tag = list(tag_dict.keys())[0]  # take only the 1st value
-            
             word_to_tag[word] = first_tag # the : DT
 
     # Read file 2 and perform mapping
@@ -157,8 +153,7 @@ def read_and_map_files(file1_path, file2_path,output_path):
             elif word == '':
                     mapped_words.append(('', ''))
             else:
-                # use 'UNK' (unknown) as a placeholder If the word is not found in file 
-                mapped_words.append((word, 'UNK'))
+                mapped_words.append((word, 'UNK')) # use 'UNK' (unknown) as a placeholder If the word is not found in file 
 
     with open(output_path, 'w') as output_file:
         for word, tag in mapped_words:
@@ -181,7 +176,8 @@ mapped_words = read_and_map_files(All_possible_tags, Corpus_without_tags, Annota
 
 #### apply rules ####
 
-def apply_transformational_rules(sentences,output_file):
+def apply_rules(sentences,output_file):
+    "Takes the newly annotated corpus and applies contextual rules to it. Creates a new file called after_rule_corpus with new tags assigned to each sentence in the corpus based on the rules"
     transformed_sentences = []
     with open(output_file, 'w') as f:
         for sentence in sentences:
@@ -191,7 +187,7 @@ def apply_transformational_rules(sentences,output_file):
             for i, (word, tag) in enumerate(sentence):
                 # Apply transformational rules based on context
                 if word == 'continued' and i < len(sentence) - 1 and (sentence[i + 1][1] == 'NN' or sentence[i + 1][1] == 'VBG' ):
-                    transformed_sentence.append(('continued', 'VBN'))  # 'all' before a DT is likely a predeterminer 
+                    transformed_sentence.append(('continued', 'VBN'))  # 'continued' before a NN or a VBG is likely a VBN (Verb, past participle) 
                 elif word.isalpha() and (len(word) == 1 and sentence[i + 1][1] == ':'):
                     transformed_sentence.append((word, 'LS'))   
                 elif  word == '-':
@@ -237,11 +233,11 @@ def apply_transformational_rules(sentences,output_file):
                     # Determine tag for 'to' based on previous tag
                     ptags = ['VB', 'VBP', 'MD',  'NN', 'JJ', 'NNS', 'RB', 'VBZ', 'VBD']
                     if previous_tag in ptags and (sentence[i + 1][1] == 'VB' or sentence[i + 1][1] == 'VBZ' or sentence[i + 1][1] == 'VBD'  ):
-                        transformed_sentence.append(('to', 'TO'))  # Tag 'to' as infinitive marker preposition if next tag is verb
+                        transformed_sentence.append(('to', 'TO'))  
                     elif previous_tag in ptags and (sentence[i + 1][1] == 'DT' or sentence[i +1][1] ==  'NN') and sentence[i +2][1] not in ['VB', 'VBZ', 'VBD']:
-                        transformed_sentence.append(('to', 'IN'))  # Tag 'to' as infinitive marker preposition if next tag is verb
+                        transformed_sentence.append(('to', 'IN'))  
                     else:
-                        transformed_sentence.append(('to', 'IN'))  # Otherwise, tag 'to' as ipreposition
+                        transformed_sentence.append(('to', 'IN'))  # else tag 'to' as preposition
                 elif word == 'all' and i < len(sentence) - 1 and (sentence[i + 1][1] == 'DT' or sentence[i + 1][1] == 'PRP$' ):
                     transformed_sentence.append(('all', 'PDT'))  # 'all' before a DT is likely a predeterminer
                 elif word == 'about' and i > 0 and sentence[i - 1][1] == 'IN':
@@ -249,15 +245,13 @@ def apply_transformational_rules(sentences,output_file):
                 elif word in ['he', 'HE','He', 'she', 'SHE','She', 'it', 'IT']:
                     transformed_sentence.append((word, 'PRP'))  # Tag 'he' as PRP (subject pronoun)
                 elif word.isdigit() or contains_digit(word):
-                    # number.append(word) #1400s : CD, one : CD 1:CD mid-1970s : JJ
                     transformed_sentence.append((word, 'CD'))  # Tag all digits as cardinal numbers
                 else:
                     transformed_sentence.append((word, tag))  # Keep original tag if no rule applies
                 
                 # Update previous tag for next iteration
                 previous_tag = tag
-            
-            
+
             for word, tag in transformed_sentence:
                 f.write(f"{word}\t{tag}")
                 f.write("\n")  # Write a blank line to separate sentences
@@ -269,12 +263,13 @@ def apply_transformational_rules(sentences,output_file):
 
 Annotated_parsed=parse_training_data(Annotated_corpus_majority_tags)
 after_rule_corpus = os.path.join(sys.path[0], "after_rule_corpus.txt")
-transformed_predicted_tags = apply_transformational_rules(Annotated_parsed,after_rule_corpus)
+transformed_predicted_tags = apply_rules(Annotated_parsed,after_rule_corpus)
 
 
 #### tag 1 sentnece after applying rules ####
 
 def brill_tagger(sentence, word_to_majority_tag):
+    "Initial Brill tagger function that performs pos tagging on a sentence using the after_rule_corpus corpus by consedering the majority class for the word"
     tagged_sentence = []
     words = []
     current_token = ""
@@ -292,9 +287,7 @@ def brill_tagger(sentence, word_to_majority_tag):
 
     for word in words:
         if word in word_to_majority_tag:
-            # print(word_to_majority_tag[word])
             for i in word_to_majority_tag[word]:
-                # print(i)
                 tagged_sentence.append((word, i))
         else:
             # If word is not in training data, default to a common tag like 'NN' (noun)
@@ -314,8 +307,8 @@ word_to_tag_GS = build_word_to_tag_dict(gold_standard_parsed)
 
 sample_sentence = "The economy's temperature will be taken from several vantage points this week, with readings on trade ,output, housing and inflation ."
 
-brill_tags = brill_tagger(sample_sentence, word_to_tag)
-brill_tags_GC = brill_tagger(sample_sentence, word_to_tag_GS)
+brill_tags = brill_tagger(sample_sentence, word_to_tag) #
+brill_tags_GC = brill_tagger(sample_sentence, word_to_tag_GS) #
 
 #### Testing on 1 sentence ####
 
@@ -325,25 +318,28 @@ brill_tags_GC = brill_tagger(sample_sentence, word_to_tag_GS)
 
 
 #### evaluate ####
+def evaluate(gold_tags,annotated_tags,labels):
+    "import the evaluation file to compare the tags from after_rule_corpus and test. Calculate and print macro_average, micro_average, F1-score, Precision and Reacall"
+    final_annotated_tags = []
+    for i in annotated_tags:
+        for j in i:
+            final_annotated_tags.append(j[1])
 
-final_annotated_tags = []
-for i in final_parsed:
-    for j in i:
-        final_annotated_tags.append(j[1])
+    final_gold_tags = []
+    for i in gold_tags:
+        for j in i:
+            final_gold_tags.append(j[1])
 
-
-final_gold_tags = []
-for i in gold_standard_parsed:
-    for j in i:
-        final_gold_tags.append(j[1])
-
+    print("Macro Average values for given labels : ",evaluation.macro_average(final_gold_tags,final_annotated_tags,labels)) #testing function macro_average
+    print("Micro Average values for given labels : ",evaluation.micro_average(final_gold_tags,final_annotated_tags,labels)) #testing function micro_average
+    print("F1 Score for given labels : ",evaluation.calculate_f1score(final_gold_tags,final_annotated_tags,labels)) #testing function calculate_f1score
+    print("Precision-Recall for given labels : ",evaluation.calculate_precision_recall(final_gold_tags,final_annotated_tags,labels)) #testing function calculate_f1score
+    print("Matrix values for given labels : ",evaluation.matrix_values(final_gold_tags,final_annotated_tags,labels)) #testing function calculate_f1score
+    return 
 
 labels = ["NN","DT","PRP","POS"]
-print("Macro Average values for given labels : ",evaluation.macro_average(final_gold_tags,final_annotated_tags,labels)) #testing function macro_average
-# print("Micro Average values for given labels : ",evaluation.micro_average(final_gold_tags,final_annotated_tags,labels)) #testing function micro_average
-print("F1 Score for given labels : ",evaluation.calculate_f1score(final_gold_tags,final_annotated_tags,labels)) #testing function calculate_f1score
-print("Precision-Recall for given labels : ",evaluation.calculate_precision_recall(final_gold_tags,final_annotated_tags,labels)) #testing function calculate_f1score
-print("Matrix values for given labels : ",evaluation.matrix_values(final_gold_tags,final_annotated_tags,labels)) #testing function calculate_f1score
+
+evaluate(gold_standard_parsed,final_parsed,labels)
 
 #### evaluate ####
 
