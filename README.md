@@ -18,6 +18,6 @@ evaluation.py is the evaluation file
 
 dev.col, dev-predicted.col, train.col, test.col : Data from IMS server
 
-- keep all of these files in the same folder
-- Run Brill.py
-- On running Brill.py, the Macro & Micro average F1-Scores, Precision & Recall values will be calculated and printed. Also, 4 txt files will be created in the same folder
+- Keep all of these files in the same folder;
+- Run Brill.py ;
+- On running Brill.py, the Macro & Micro average F1-Scores, Precision & Recall values will be calculated and printed. Also, 4 txt files will be created in the same folder.
