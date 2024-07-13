@@ -591,12 +591,6 @@ def remove_empty_lists(d):
 cleaned_data = remove_empty_lists(result)
 # print(cleaned_data)
 
-# f = open("/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/demofile3.txt", "w")
-# for i in cleaned_data:
-#     f.write(f"{i}   {cleaned_data[i]}")
-
-
-
 
 from collections import Counter
 
@@ -625,6 +619,54 @@ data = {
 }
 
 analyzed_data = analyze_patterns(cleaned_data)
-print(analyzed_data)
+# print(analyzed_data)
 
 
+
+f = open("/Users/mayurideshmukh/Desktop/Team-Lab/Brill-Tagger/transformation_patterns.txt", "w")
+for i in analyzed_data:
+    f.write(f"{i}   {analyzed_data[i]}")
+
+
+
+def apply_transformation_rules(sentences, transformation_patterns):
+    for sentence in sentences:
+        for i in range(len(sentence)):
+            word, current_tag = sentence[i]
+
+            # Get the previous and next tags if they exist
+            prev_tag = sentence[i-1][1] if i > 0 else None
+            next_tag = sentence[i+1][1] if i < len(sentence) - 1 else None
+
+            # Iterate over each transformation pattern
+            for correct_tag, patterns in transformation_patterns.items():
+                for pattern in patterns:
+                    if (prev_tag, current_tag, next_tag) == pattern:
+                        # Apply the transformation: change the current tag to the correct tag
+                        sentence[i] = (word, correct_tag)
+                        break  # Break after applying the first matching transformation
+
+    return sentences
+
+# Example data
+sentences = [
+    [('She', 'NN'), ('runs', 'NN'), ('quickly', 'RB')],
+    [('The', 'DT'), ('cat', 'NN'), ('jumps', 'NN')],
+    [('He', 'PRP'), ('is', 'VBZ'), ('happy', 'NN')],
+    [('A', 'DT'), ('dog', 'NN'), ('barks', 'NN')]
+]
+
+transformation_patterns = {
+    'VBZ': [('NN', 'NN', 'RB'), ('NN', 'NN', 'VBN'), ('NN', 'NN', 'IN'), 
+            ("''", 'NN', 'NNP'), ('NN', 'NN', 'JJ'), ('NNP', 'NN', 'VBN'), 
+            ('PRP', 'NN', 'VBD'), ('NN', 'NN', 'WRB'), ('RB', 'NN', 'NN')],
+    'NN': [('DT', 'NN', 'VBZ'), ('DT', 'NN', 'RB'), ('PRP', 'NN', 'VBZ')],
+    'JJ': [('VBZ', 'NN', None)]
+}
+
+# Apply the transformation rules
+updated_sentences = apply_transformation_rules(final_parsed, cleaned_data)
+
+# # Print the updated sentences
+# for sentence in updated_sentences:
+#     print(sentence)
