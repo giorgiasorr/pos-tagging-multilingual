@@ -15,9 +15,9 @@ def contains_digit(s):
     return any(map(isdigit, s))
 
 
-train_file = os.path.join(sys.path[0], "fr_test.col")
+train_file = os.path.join(sys.path[0], "fr_train.col")
 gold_standard_file = os.path.join(sys.path[0], "fr_test.col")
-L_train_file = os.path.join(sys.path[0], "fr_train.col")
+L_train_file = os.path.join(sys.path[0], "fr_test.col")
 
 
 #### Create a corpus without tags ####
@@ -46,7 +46,7 @@ def create_corpus_C(training_file):
     return sentences
 
 
-create_corpus_C(train_file)
+create_corpus_C(L_train_file)
 
 #### Create a corpus without tags ####F
 
@@ -183,9 +183,7 @@ def read_and_map_files(file1_path, file2_path, output_path):
 
 
 Annotated_corpus_majority_tags = os.path.join(sys.path[0], "annotated_corpus_french.txt")
-mapped_words = read_and_map_files(
-    All_possible_tags, Corpus_without_tags, Annotated_corpus_majority_tags
-)
+mapped_words = read_and_map_files(All_possible_tags, Corpus_without_tags, Annotated_corpus_majority_tags)
 
 
 

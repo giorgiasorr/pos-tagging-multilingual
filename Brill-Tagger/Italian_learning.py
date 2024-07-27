@@ -15,9 +15,9 @@ def contains_digit(s):
     return any(map(isdigit, s))
 
 
-train_file = os.path.join(sys.path[0], "it_test.col")
+train_file = os.path.join(sys.path[0], "it_train.col")
 gold_standard_file = os.path.join(sys.path[0], "it_test.col")
-L_train_file = os.path.join(sys.path[0], "it_train.col")
+L_train_file = os.path.join(sys.path[0], "it_test.col")
 
 
 #### Create a corpus without tags ####
@@ -46,7 +46,7 @@ def create_corpus_C(training_file):
     return sentences
 
 
-create_corpus_C(train_file)
+create_corpus_C(L_train_file)
 
 #### Create a corpus without tags ####
 

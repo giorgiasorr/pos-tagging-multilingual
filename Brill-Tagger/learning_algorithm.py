@@ -8,13 +8,6 @@ import collections
 from collections import defaultdict
 
 
-
-def contains_digit(s):
-    "checks whether a word in the corpus contains a number or not such as 400th, 250th ,1400s..."
-    isdigit = str.isdigit
-    return any(map(isdigit, s))
-
-
 train_file = os.path.join(sys.path[0], "test.col")
 gold_standard_file = os.path.join(sys.path[0], "test.col")
 L_train_file = os.path.join(sys.path[0], "train.col")
@@ -129,7 +122,7 @@ def calculate_possible_tags(word_to_tag):
 #### calculate possible tags for each word ####
 
 
-predicted_parsed = parse_training_data(train_file)
+predicted_parsed = parse_training_data(L_train_file)
 gold_standard_parsed = parse_training_data(gold_standard_file)
 word_to_tag = build_word_to_tag_dict(predicted_parsed)
 word_to_possible_tags = calculate_possible_tags(word_to_tag)
