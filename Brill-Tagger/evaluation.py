@@ -163,3 +163,82 @@ def micro_average(y_true, y_pred, labels):
 
 
 # print(micro_average(true_tags,dummy_tags,tag)) #testing function macro_average
+
+
+
+########## Accuracy ##########
+def calculate_accuracy(y_true, y_pred):
+    correct_predictions = 0
+    total_predictions = len(y_true)
+
+    for true_tag, pred_tag in zip(y_true, y_pred):
+        if true_tag == pred_tag:
+            correct_predictions += 1
+
+    accuracy = correct_predictions / total_predictions
+    return accuracy
+
+
+########## Accuracy ##########
+
+
+
+
+
+
+
+
+
+def evaluate(gold_tags, annotated_tags, labels):
+    "import the evaluation file to compare the tags from after_rule_corpus and test. Calculate and print macro_average, micro_average, F1-score, Precision and Reacall"
+    final_annotated_tags = []
+    for i in annotated_tags:
+        for j in i:
+            final_annotated_tags.append(j[1])
+
+    final_gold_tags = []
+    for i in gold_tags:
+        for j in i:
+            final_gold_tags.append(j[1])
+    try:
+        print("Accuracy : ", calculate_accuracy(final_gold_tags, final_annotated_tags))
+    except ZeroDivisionError as e:
+        print("Error in calculate_accuracy calculation:", e)
+    try:
+        print(
+        "Macro Average values for given labels : ",
+        macro_average(final_gold_tags, final_annotated_tags, labels),
+    )  # testing function macro_average
+    except ZeroDivisionError as e:
+        print("Error in macro_average calculation:", e)
+    try:
+        print(
+        "Micro Average values for given labels : ",
+        micro_average(final_gold_tags, final_annotated_tags, labels),
+    )  # testing function micro_average
+    except ZeroDivisionError as e:
+        print("Error in micro_average calculation:", e)
+    # try : 
+    #     print(
+    #     "F1 Score for given labels : ",
+    #     calculate_f1score(final_gold_tags, final_annotated_tags, labels),
+    # )  # testing function calculate_f1score
+    # except ZeroDivisionError as e:
+    #     print("Error in calculate_f1score calculation:", e)
+    # try:
+    #     print(
+    #     "Precision-Recall for given labels : ",
+    #     calculate_precision_recall(
+    #         final_gold_tags, final_annotated_tags, labels
+    #     ),
+    # )  # testing function calculate_f1score
+    # except ZeroDivisionError as e:
+    #     print("Error in calculate_precision_recall calculation:", e)
+    # try:
+    #     print(
+    #     "Matrix values for given labels : ",
+    #     matrix_values(final_gold_tags, final_annotated_tags, labels),
+    # )  # testing function calculate_f1score
+    # except ZeroDivisionError as e:
+    #     print("Error in matrix_values calculation:", e)
+    return
