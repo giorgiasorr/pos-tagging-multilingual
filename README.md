@@ -36,10 +36,10 @@ it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldepend
   
 [Brill Based]
 - Run Brill.py ;
-- On running Brill.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. Estimated time : 1 Hour
+- On running Brill.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. 
 
 [HMM English]
-- Run hmm_en.py ;
+- Run hmm_en.py using an external server, such as IMS Phoenix Server.
 - On running hmm_en.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for the English data. 
 
 [HMM Italian]
