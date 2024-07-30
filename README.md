@@ -39,14 +39,17 @@ it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldepend
 - On running Brill.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. 
 
 [HMM English]
+- Make sure you have the following library installed: scikit-learn.
 - Run hmm_en.py using an external server, such as IMS Phoenix Server.
 - On running hmm_en.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for the English data. 
 
 [HMM Italian]
+- Make sure you have the following libraries installed: scikit-learn, numpy.
 - Run hmm_it.py ;
 - On running hmm_it.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for the Italian data.
 
 [HMM French]
+- Make sure you have the following libraries installed: scikit-learn, numpy.
 - Run hmm_fr.py ;
 - On running hmm_fr.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for the French data. 
 
