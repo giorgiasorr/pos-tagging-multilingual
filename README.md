@@ -31,11 +31,11 @@ it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldepend
   
 [Rule Based]
 - Run RuleBased.py ; 
-- On running contextual_rules.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English data.
+- On running RuleBased.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English data.
   
 [Brill Based]
 - Run Brill.py ;
-- On running learning_algorithm.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. Estimated time : 1 Hour
+- On running Brill.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. Estimated time : 1 Hour
 
 [HMM English]
 - Run hmm_en.py ;
