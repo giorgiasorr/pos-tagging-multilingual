@@ -22,7 +22,7 @@ hmm_it.py is the file that performs probabilistic tagging, using hidden Markov m
 
 hmm_fr.py is the file that performs probabilistic tagging, using hidden Markov model and the Viterbi algorithm, for French data.
 
-evaluation.py is the evaluation file
+evaluation.py is the evaluation file.
 
 train.col, test.col : Data from IMS server
 it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldependencies.org
