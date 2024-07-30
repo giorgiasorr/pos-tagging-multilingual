@@ -5,16 +5,16 @@
 
 # Task Details
 
-- Task : Part-of-Speech Tagger
+- Task : Part-of-Speech Tagging
 - Approaches : Rule-Based, Brill Tagger, HMM, ...
 - Evaluation :  Accuracy, Macro & Micro F1-Scores
 - Language : Python
 
 # How to run the files
 
-Brill.py is the file that performs transformation based brill by using learning algorithm for English, Italian & French.
+RuleBased.py is the file that performs rule-based tagging for English data.
 
-contextual_rules.py is the file that performs rule based brill for English language.
+Brill.py is the file that performs transformation based tagging, using Brill, for English, Italian & French.
 
 hmm_en.py is the file that performs probabilistic tagging, using hidden Markov model and the Viterbi algorithm, for English data.
 
@@ -29,12 +29,12 @@ it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldepend
 
 - Keep all of these files in the same folder;
   
-[Rule Based] # Baseline
-- Run contextual_rules.py ; 
+[Rule Based]
+- Run RuleBased.py ; 
 - On running contextual_rules.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English data.
   
-[Transformation Based]
-- Run learning_algorithm.py ;
+[Brill Based]
+- Run Brill.py ;
 - On running learning_algorithm.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. Estimated time : 1 Hour
 
 [HMM English]
