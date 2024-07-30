@@ -25,7 +25,7 @@ french_L_train_file = os.path.join(sys.path[0], "fr_test.col")
 
 
 #### Create a corpus without tags ####
-def create_corpus_C(training_file,path):
+def create_corpus_C(training_file, path):
     "reads the test.col line by line and creates a corpus with only words from test.col each empty line represents the end of a sentence."
     sentences = []
     current_sentence = []
@@ -47,13 +47,17 @@ def create_corpus_C(training_file,path):
 
     return sentences
 
+
 Corpus_without_tags = os.path.join(sys.path[0], "corpus_without_tags_english.txt")
-italian_Corpus_without_tags = os.path.join(sys.path[0], "corpus_without_tags_italian.txt")
+italian_Corpus_without_tags = os.path.join(
+    sys.path[0], "corpus_without_tags_italian.txt"
+)
 french_Corpus_without_tags = os.path.join(sys.path[0], "corpus_without_tags_french.txt")
 
-create_corpus_C(L_train_file,Corpus_without_tags) # English
-create_corpus_C(italian_L_train_file,italian_Corpus_without_tags) # Italian
-create_corpus_C(french_L_train_file,french_Corpus_without_tags) # French
+create_corpus_C(L_train_file, Corpus_without_tags)  # English
+create_corpus_C(italian_L_train_file, italian_Corpus_without_tags)  # Italian
+create_corpus_C(french_L_train_file, french_Corpus_without_tags)  # French
+
 
 #### parse corpus sentence wise ####
 def parse_training_data(training_file):
@@ -96,8 +100,9 @@ def build_word_to_tag_dict(sentences):
 
     return word_to_tag
 
+
 #### calculate possible tags for each word ####
-def calculate_possible_tags(word_to_tag,path):
+def calculate_possible_tags(word_to_tag, path):
     "Read train.col for this because it has a lot of data, write it in a descending order to a file possible_tags_english.txt [ example : {'in': {'IN': 560, 'RP': 8, 'RB': 2}}"
     word_to_majority_tag = {}
     all_posible_tags = {}
@@ -119,26 +124,32 @@ def calculate_possible_tags(word_to_tag,path):
             fp.write("%s\n" % {i: sorted_d})
     return new_dict
 
+
 ###### ENGLISH ######
 All_possible_tags = os.path.join(sys.path[0], "possible_tags_english.txt")
 predicted_parsed = parse_training_data(train_file)
 gold_standard_parsed = parse_training_data(gold_standard_file)
 word_to_tag = build_word_to_tag_dict(predicted_parsed)
-word_to_possible_tags = calculate_possible_tags(word_to_tag,All_possible_tags)
+word_to_possible_tags = calculate_possible_tags(word_to_tag, All_possible_tags)
 
 ###### Italian ######
 italian_All_possible_tags = os.path.join(sys.path[0], "possible_tags_italian.txt")
 italian_predicted_parsed = parse_training_data(italian_train_file)
 italian_gold_standard_parsed = parse_training_data(italian_gold_standard_file)
 italian_word_to_tag = build_word_to_tag_dict(italian_predicted_parsed)
-italian_word_to_possible_tags = calculate_possible_tags(italian_word_to_tag,italian_All_possible_tags)
+italian_word_to_possible_tags = calculate_possible_tags(
+    italian_word_to_tag, italian_All_possible_tags
+)
 
 ###### French ######
 french_All_possible_tags = os.path.join(sys.path[0], "possible_tags_french.txt")
 french_predicted_parsed = parse_training_data(french_train_file)
 french_gold_standard_parsed = parse_training_data(french_gold_standard_file)
 french_word_to_tag = build_word_to_tag_dict(french_predicted_parsed)
-french_word_to_possible_tags = calculate_possible_tags(french_word_to_tag,french_All_possible_tags)
+french_word_to_possible_tags = calculate_possible_tags(
+    french_word_to_tag, french_All_possible_tags
+)
+
 
 #### annotate the corpus with majority tag ####
 def read_and_map_files(file1_path, file2_path, output_path):
@@ -178,18 +189,34 @@ def read_and_map_files(file1_path, file2_path, output_path):
 
 
 ###### ENGLISH ######
-Annotated_corpus_majority_tags = os.path.join(sys.path[0], "annotated_corpus_english.txt")
-mapped_words = read_and_map_files(All_possible_tags, Corpus_without_tags, Annotated_corpus_majority_tags)
+Annotated_corpus_majority_tags = os.path.join(
+    sys.path[0], "annotated_corpus_english.txt"
+)
+mapped_words = read_and_map_files(
+    All_possible_tags, Corpus_without_tags, Annotated_corpus_majority_tags
+)
 Annotated_parsed = parse_training_data(Annotated_corpus_majority_tags)
 
 ###### Italian ######
-italian_Annotated_corpus_majority_tags = os.path.join(sys.path[0], "annotated_corpus_italian.txt")
-italian_mapped_words = read_and_map_files(italian_All_possible_tags, italian_Corpus_without_tags, italian_Annotated_corpus_majority_tags)
+italian_Annotated_corpus_majority_tags = os.path.join(
+    sys.path[0], "annotated_corpus_italian.txt"
+)
+italian_mapped_words = read_and_map_files(
+    italian_All_possible_tags,
+    italian_Corpus_without_tags,
+    italian_Annotated_corpus_majority_tags,
+)
 italian_Annotated_parsed = parse_training_data(italian_Annotated_corpus_majority_tags)
 
 ###### French ######
-french_Annotated_corpus_majority_tags = os.path.join(sys.path[0], "annotated_corpus_french.txt")
-french_mapped_words = read_and_map_files(french_All_possible_tags, french_Corpus_without_tags, french_Annotated_corpus_majority_tags)
+french_Annotated_corpus_majority_tags = os.path.join(
+    sys.path[0], "annotated_corpus_french.txt"
+)
+french_mapped_words = read_and_map_files(
+    french_All_possible_tags,
+    french_Corpus_without_tags,
+    french_Annotated_corpus_majority_tags,
+)
 french_Annotated_parsed = parse_training_data(french_Annotated_corpus_majority_tags)
 
 
@@ -203,7 +230,7 @@ with open(Annotated_corpus_majority_tags, "r") as file:
             all_tags.append(tag)
 counter = collections.Counter(all_tags)
 
-labels =[]
+labels = []
 for i in set(all_tags):
     labels.append(i)
 
@@ -218,7 +245,7 @@ with open(italian_Annotated_corpus_majority_tags, "r") as file:
             italian_all_tags.append(tag)
 counter = collections.Counter(italian_all_tags)
 
-italian_labels =[]
+italian_labels = []
 for i in set(italian_all_tags):
     italian_labels.append(i)
 
@@ -233,7 +260,7 @@ with open(french_Annotated_corpus_majority_tags, "r") as file:
             french_all_tags.append(tag)
 counter = collections.Counter(french_all_tags)
 
-french_labels =[]
+french_labels = []
 for i in set(french_all_tags):
     french_labels.append(i)
 
@@ -253,71 +280,78 @@ with open(gold_standard_file, "r") as file:
 final_matrix = []
 with open(Annotated_corpus_majority_tags, "r") as file:
     for line in file:
-        if line.strip():  
+        if line.strip():
             word, tag = line.split()
             final_matrix.append((word, tag))
-        else:  
+        else:
             next
 
 ###### Italian ######
 italian_gold_matrix = []
 with open(italian_gold_standard_file, "r") as file:
     for line in file:
-        if line.strip():  
+        if line.strip():
             word, tag = line.split()
             italian_gold_matrix.append((word, tag))
-        else:  
+        else:
             next
 
 italian_final_matrix = []
 with open(italian_Annotated_corpus_majority_tags, "r") as file:
     for line in file:
-        if line.strip():  
+        if line.strip():
             word, tag = line.split()
             italian_final_matrix.append((word, tag))
-        else:  
+        else:
             next
 
 ###### French ######
 french_gold_matrix = []
 with open(french_gold_standard_file, "r") as file:
     for line in file:
-        if line.strip():  
+        if line.strip():
             word, tag = line.split()
             french_gold_matrix.append((word, tag))
-        else:  
+        else:
             next
 
 french_final_matrix = []
 with open(french_Annotated_corpus_majority_tags, "r") as file:
     for line in file:
-        if line.strip():  
+        if line.strip():
             word, tag = line.split()
             french_final_matrix.append((word, tag))
-        else:  
+        else:
             next
-
 
 
 # confusion matrix
 def generate_confusion_table(transformed_corpus, gold_standard):
     confusion_table = defaultdict(int)
-    for (transformed_word, transformed_tag), (gold_word, gold_tag) in zip(transformed_corpus, gold_standard):
+    for (transformed_word, transformed_tag), (gold_word, gold_tag) in zip(
+        transformed_corpus, gold_standard
+    ):
         if transformed_tag != gold_tag:
             confusion_table[(transformed_tag, gold_tag)] += 1
     return confusion_table
 
 
-confusion_table1 = generate_confusion_table(final_matrix, gold_matrix) # English 
-confusion_table2 = generate_confusion_table(italian_final_matrix, italian_gold_matrix) # Italian 
-confusion_table3 = generate_confusion_table(french_final_matrix, french_gold_matrix) # French 
+confusion_table1 = generate_confusion_table(final_matrix, gold_matrix)  # English
+confusion_table2 = generate_confusion_table(
+    italian_final_matrix, italian_gold_matrix
+)  # Italian
+confusion_table3 = generate_confusion_table(
+    french_final_matrix, french_gold_matrix
+)  # French
 
 
 def analyze_and_apply_transformations(gold_data, initial_data, confusion_matrix):
     def get_context(tagged_sentence, index):
         # Get the previous and next tag for a given index in a tagged sentence
-        prev_tag = tagged_sentence[index-1][1] if index > 0 else None
-        next_tag = tagged_sentence[index+1][1] if index < len(tagged_sentence)-1 else None
+        prev_tag = tagged_sentence[index - 1][1] if index > 0 else None
+        next_tag = (
+            tagged_sentence[index + 1][1] if index < len(tagged_sentence) - 1 else None
+        )
         return prev_tag, next_tag
 
     context_patterns = defaultdict(list)
@@ -329,7 +363,7 @@ def analyze_and_apply_transformations(gold_data, initial_data, confusion_matrix)
     for (incorrect_tag, correct_tag), _ in confusion_matrix.items():
         pattern_counts = Counter(context_patterns[correct_tag])
         best_pattern = None
-        best_error_count = float('inf')
+        best_error_count = float("inf")
 
         for pattern in pattern_counts:
             test_data = copy.deepcopy(initial_data)
@@ -348,7 +382,7 @@ def analyze_and_apply_transformations(gold_data, initial_data, confusion_matrix)
 
         if best_pattern:
             final_rules.append((incorrect_tag, correct_tag, best_pattern))
-    final_data = copy.deepcopy(initial_data) # apply final rules
+    final_data = copy.deepcopy(initial_data)  # apply final rules
     for incorrect_tag, correct_tag, pattern in final_rules:
         for i_sentence, sentence in enumerate(final_data):
             for i_word, (word, tag) in enumerate(sentence):
@@ -359,29 +393,39 @@ def analyze_and_apply_transformations(gold_data, initial_data, confusion_matrix)
 
     return final_data, final_rules
 
+
 def calculate_confusion_matrix(gold_data, test_data):
     confusion_matrix = defaultdict(int)
     for gold_sentence, test_sentence in zip(gold_data, test_data):
-        for (gold_word, gold_tag), (test_word, test_tag) in zip(gold_sentence, test_sentence):
+        for (gold_word, gold_tag), (test_word, test_tag) in zip(
+            gold_sentence, test_sentence
+        ):
             if gold_tag != test_tag:
                 confusion_matrix[(test_tag, gold_tag)] += 1
     return confusion_matrix
 
 
-
-final_data, final_rules = analyze_and_apply_transformations(gold_standard_parsed, Annotated_parsed, confusion_table1)
-italian_final_data, italian_final_rules = analyze_and_apply_transformations(italian_gold_standard_parsed, italian_Annotated_parsed, confusion_table2)
-french_final_data, french_final_rules = analyze_and_apply_transformations(french_gold_standard_parsed, french_Annotated_parsed, confusion_table3)
+final_data, final_rules = analyze_and_apply_transformations(
+    gold_standard_parsed, Annotated_parsed, confusion_table1
+)
+italian_final_data, italian_final_rules = analyze_and_apply_transformations(
+    italian_gold_standard_parsed, italian_Annotated_parsed, confusion_table2
+)
+french_final_data, french_final_rules = analyze_and_apply_transformations(
+    french_gold_standard_parsed, french_Annotated_parsed, confusion_table3
+)
 
 # print("Final Data:", final_data)
 # print("Final Rules Applied:", final_rules)
+
 
 def write_final_data_to_file(final_data, output_file):
     with open(output_file, "w") as file:
         for sentence in final_data:
             for word, tag in sentence:
                 file.write(f"{word}\t{tag}\n")
-            file.write("\n")  
+            file.write("\n")
+
 
 ###### English ######
 output_file_path = os.path.join(sys.path[0], "final_data.txt")
@@ -389,7 +433,9 @@ write_final_data_to_file(final_data, output_file_path)
 print(f"Final English data written to {output_file_path}")
 learning_output = parse_training_data(output_file_path)
 print("###### English ######")
-learning_algorithm_evaluation = evaluation.evaluate(gold_standard_parsed, learning_output, labels)
+learning_algorithm_evaluation = evaluation.evaluate(
+    gold_standard_parsed, learning_output, labels
+)
 
 ###### Italian ######
 italian_output_file_path = os.path.join(sys.path[0], "final_data_italian.txt")
@@ -397,7 +443,9 @@ write_final_data_to_file(italian_final_data, italian_output_file_path)
 print(f"Final Italian data written to {italian_output_file_path}")
 italian_learning_output = parse_training_data(italian_output_file_path)
 print("###### Italian ######")
-learning_algorithm_evaluation = evaluation.evaluate(italian_gold_standard_parsed, italian_learning_output, italian_labels)
+learning_algorithm_evaluation = evaluation.evaluate(
+    italian_gold_standard_parsed, italian_learning_output, italian_labels
+)
 
 ###### French ######
 french_output_file_path = os.path.join(sys.path[0], "final_data_french.txt")
@@ -405,4 +453,6 @@ write_final_data_to_file(french_final_data, french_output_file_path)
 print(f"Final French data written to {french_output_file_path}")
 french_learning_output = parse_training_data(french_output_file_path)
 print("###### French ######")
-learning_algorithm_evaluation = evaluation.evaluate(french_gold_standard_parsed, french_learning_output, french_labels)
+learning_algorithm_evaluation = evaluation.evaluate(
+    french_gold_standard_parsed, french_learning_output, french_labels
+)

@@ -4,6 +4,7 @@ import os
 import evaluation
 import collections
 
+
 def contains_digit(s):
     "checks whether a word in the corpus contains a number or not such as 400th, 250th ,1400s..."
     isdigit = str.isdigit
@@ -120,7 +121,6 @@ def calculate_possible_tags(word_to_tag):
     return new_dict
 
 
-
 #### calculate possible tags for each word ####
 
 
@@ -134,11 +134,7 @@ All_possible_tags = os.path.join(sys.path[0], "possible_tags.txt")
 Corpus_without_tags = os.path.join(sys.path[0], "corpus_without_tags.txt")
 
 
-
-
 #### annotate the corpus with majority tag ####
-
-
 
 
 def read_and_map_files(file1_path, file2_path, output_path):
@@ -183,14 +179,10 @@ mapped_words = read_and_map_files(
 )
 
 
-
-
 #### annotate the corpus with majority tag ####
 
 
 #### apply rules ####
-
-
 
 
 def apply_rules(sentences, output_file):
@@ -313,9 +305,7 @@ def apply_rules(sentences, output_file):
     return transformed_sentences
 
 
-
 #### apply rules ####
-
 
 
 Annotated_parsed = parse_training_data(Annotated_corpus_majority_tags)
@@ -323,9 +313,7 @@ after_rule_corpus = os.path.join(sys.path[0], "after_rule_corpus.txt")
 transformed_predicted_tags = apply_rules(Annotated_parsed, after_rule_corpus)
 
 
-
 #### Testing on 1 sentence ####
-
 
 
 final_file = after_rule_corpus
@@ -338,7 +326,6 @@ final_parsed = parse_training_data(final_file)
 #### evaluate ####
 
 
-
 all_tags = []
 with open(after_rule_corpus, "r") as file:
     for line in file:
@@ -346,11 +333,12 @@ with open(after_rule_corpus, "r") as file:
             word, tag = line.split()
             all_tags.append(tag)
 counter = collections.Counter(all_tags)
-labels =[]
+labels = []
 for i in set(all_tags):
     labels.append(i)
 
 
 print("###### Contextual English ######")
-contextual_rules_evaluation =  evaluation.evaluate(gold_standard_parsed, final_parsed, labels)
-
+contextual_rules_evaluation = evaluation.evaluate(
+    gold_standard_parsed, final_parsed, labels
+)

@@ -1,5 +1,14 @@
 ######### Temporary Data for testing ##########
-true_tags = ["NN", "DT", "P", "HYP", "NN", "P", "DT", "DT"]  # correct(GoldStandard data)
+true_tags = [
+    "NN",
+    "DT",
+    "P",
+    "HYP",
+    "NN",
+    "P",
+    "DT",
+    "DT",
+]  # correct(GoldStandard data)
 dummy_tags = ["NN", "VB", "P", "P", "DT", "P", "HYP", "DT"]  # predicted(Dummy data)
 tag = ["NN", "P", "DT"]  # Multi label
 # tag = "P" # Single label
@@ -27,7 +36,9 @@ def matrix_values(y_true, y_pred, label):  # check position of parameter
                 elif (y_true[i] != label[j]) and (y_pred[i] != label[j]):
                     true_negative += 1  # increment true_negative by 1
         else:
-            print("******\nTHE LENGTH OF CORRECT and PREDICTED LIST IS DIFFERENT\n*****")
+            print(
+                "******\nTHE LENGTH OF CORRECT and PREDICTED LIST IS DIFFERENT\n*****"
+            )
         each_tag[label[j]] = [
             [true_positive, false_positive],
             [false_negative, true_negative],
@@ -44,7 +55,9 @@ def matrix_values(y_true, y_pred, label):  # check position of parameter
 
 ########## Function to calculate Precision & Recall ##########
 def calculate_precision_recall(y_true, y_pred, label):
-    values = matrix_values(y_true, y_pred, label)  # call matrix_values to get tp, fp, fn, tn values
+    values = matrix_values(
+        y_true, y_pred, label
+    )  # call matrix_values to get tp, fp, fn, tn values
     PrecisionDict = {}
     RecallDict = {}
     Final_values = {"Precision": PrecisionDict, "Recall": RecallDict}
@@ -52,8 +65,12 @@ def calculate_precision_recall(y_true, y_pred, label):
         tp = values[i][0][0]
         fp = values[i][0][1]
         fn = values[i][1][0]
-        PrecisionDict[i] = tp / (tp + fp) if (tp + fp) > 0 else 0  # handle division by zero
-        RecallDict[i] = tp / (tp + fn) if (tp + fn) > 0 else 0  # handle division by zero
+        PrecisionDict[i] = (
+            tp / (tp + fp) if (tp + fp) > 0 else 0
+        )  # handle division by zero
+        RecallDict[i] = (
+            tp / (tp + fn) if (tp + fn) > 0 else 0
+        )  # handle division by zero
     return Final_values
 
 
@@ -65,7 +82,9 @@ def calculate_precision_recall(y_true, y_pred, label):
 
 ########## Function to calculate F1_Score ##########
 def calculate_f1score(y_true, y_pred, label):
-    prvalues = calculate_precision_recall(y_true, y_pred, label)  # call calculate_precision_recall to get precision and recall values
+    prvalues = calculate_precision_recall(
+        y_true, y_pred, label
+    )  # call calculate_precision_recall to get precision and recall values
     Precision = prvalues["Precision"]
     Recall = prvalues["Recall"]
     F1_ScoreDict = {}
@@ -73,7 +92,9 @@ def calculate_f1score(y_true, y_pred, label):
         prec = Precision[label[i]]
         rec = Recall[label[i]]
         F1_ScoreDict[label[i]] = (
-            2 * (prec * rec) / (prec + rec) if (prec + rec) > 0 else 0  # handle division by zero
+            2 * (prec * rec) / (prec + rec)
+            if (prec + rec) > 0
+            else 0  # handle division by zero
         )
     return F1_ScoreDict
 
@@ -90,6 +111,8 @@ def macro_average(y_true, y_pred, labels):
     total_f1_score = sum(f_scores.values())
     macro_f1_score = total_f1_score / len(f_scores) if len(f_scores) > 0 else 0
     return macro_f1_score
+
+
 ########## Function to calculate Macro F1_Score ##########
 
 
@@ -119,7 +142,9 @@ def micro_average(y_true, y_pred, labels):
     # Calculate micro-average F1 score
     if overall_precision + overall_recall > 0:
         micro_f1 = (
-            2 * (overall_precision * overall_recall) / (overall_precision + overall_recall)
+            2
+            * (overall_precision * overall_recall)
+            / (overall_precision + overall_recall)
         )
     else:
         micro_f1 = 0
@@ -131,7 +156,6 @@ def micro_average(y_true, y_pred, labels):
 
 
 # print(micro_average(true_tags,dummy_tags,tag)) #testing function macro_average
-
 
 
 ########## Accuracy ##########
@@ -169,19 +193,19 @@ def evaluate(gold_tags, annotated_tags, labels):
         print("Error in calculate_accuracy calculation:", e)
     try:
         print(
-        "Macro Average values for given labels : ",
-        macro_average(final_gold_tags, final_annotated_tags, labels),
-    )  # testing function macro_average
+            "Macro Average values for given labels : ",
+            macro_average(final_gold_tags, final_annotated_tags, labels),
+        )  # testing function macro_average
     except ZeroDivisionError as e:
         print("Error in macro_average calculation:", e)
     try:
         print(
-        "Micro Average values for given labels : ",
-        micro_average(final_gold_tags, final_annotated_tags, labels),
-    )  # testing function micro_average
+            "Micro Average values for given labels : ",
+            micro_average(final_gold_tags, final_annotated_tags, labels),
+        )  # testing function micro_average
     except ZeroDivisionError as e:
         print("Error in micro_average calculation:", e)
-    # try : 
+    # try :
     #     print(
     #     "F1 Score for given labels : ",
     #     calculate_f1score(final_gold_tags, final_annotated_tags, labels),
