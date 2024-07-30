@@ -6,13 +6,13 @@
 # Task Details
 
 - Task : Part-of-Speech Tagger
-- Approaches : Brill Tagger, HMM, ...
+- Approaches : Rule-Based, Brill Tagger, HMM, ...
 - Evaluation :  Accuracy, Macro & Micro F1-Scores
 - Language : Python
 
 # How to run the files
 
-learning_algorithm.py is the file that performs transformation based brill by using learning algorithm for English, Italian & French.
+Brill.py is the file that performs transformation based brill by using learning algorithm for English, Italian & French.
 
 contextual_rules.py is the file that performs rule based brill for English language.
 
