@@ -22,9 +22,11 @@ train.col, test.col : Data from IMS server
 it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldependencies.org
 
 - Keep all of these files in the same folder;
+
 [Rule Based] # Baseline
 - Run contextual_rules.py ; 
 - On running contextual_rules.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English data. 
+
 [Transformation Based]
 - Run learning_algorithm.py ;
 - On running learning_algorithm.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for English, Italian & French data. Estimated time : 1 Hour 
