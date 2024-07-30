@@ -25,6 +25,7 @@ hmm_fr.py is the file that performs probabilistic tagging, using hidden Markov m
 evaluation.py is the evaluation file.
 
 train.col, test.col : Data from IMS server
+
 it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldependencies.org
 
 - Keep all of these files in the same folder;
