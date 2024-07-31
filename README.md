@@ -24,6 +24,11 @@ hmm_fr.py is the file that performs probabilistic tagging, using hidden Markov m
 
 evaluation.py is the evaluation file.
 
+Logistic_Regression.py contains the python code for Logistic Regression
+LSTM.py contains the code for LSTM.
+
+
+
 train.col, test.col : Data from IMS server
 
 it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldependencies.org
@@ -53,5 +58,10 @@ it_train.col, it_test.col, fr_train.col, fr_test.col : Data from universaldepend
 - Run hmm_fr.py ;
 - On running hmm_fr.py, the Accuracy, Macro & Micro average F1-Score values will be calculated and printed for the French data. 
 
+[Logistic Regression]
+- Run the file by using the command ```python Logistic_Regression.py``` [language] (Where [language] is either en, it or fr for english, italian and french respectively)
+
+[LSTM]
+- Run the file by using the command ```python LSTM.py [language]``` (Where [language] is either en, it or fr for english, italian and french respectively)
 
 
