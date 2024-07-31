@@ -12,11 +12,11 @@ language = sys.argv[1]
 
 print("Loading dataset...")
 if not language == "en":
-    data = pd.read_csv("data/processed/train{}.csv".format(language))
-    test = pd.read_csv("data/processed/test{}.csv".format(language))
+    data = pd.read_csv("train{}.csv".format(language))
+    test = pd.read_csv("test{}.csv".format(language))
 else:
-    data = pd.read_csv("data/processed/train{}.col".format(language), delimiter='\t', header=None, names=['Word', 'Tag'])
-    test = pd.read_csv("data/processed/test{}.col".format(language), delimiter='\t', header=None, names=['Word', 'Tag'])
+    data = pd.read_csv("train{}.col".format(language), delimiter='\t', header=None, names=['Word', 'Tag'])
+    test = pd.read_csv("test{}.col".format(language), delimiter='\t', header=None, names=['Word', 'Tag'])
 print("Done!")
 
 # Removing any NaNs
