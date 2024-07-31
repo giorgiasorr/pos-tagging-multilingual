@@ -6,7 +6,7 @@
 # Task Details
 
 - Task : Part-of-Speech Tagging
-- Approaches : Rule-Based, Brill Tagger, HMM, ...
+- Approaches : Rule-Based, Brill Tagger, HMM, Logistic Regression, LSTM
 - Evaluation :  Accuracy, Macro & Micro F1-Scores
 - Language : Python
 
