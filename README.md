@@ -1,8 +1,3 @@
-# Team Details
-
-- Team name : Fairies
-- Team members : Aditya Kadam, Giorgia Sorrentino, Samia Qbaibi
-
 # Task Details
 
 - Task : Part-of-Speech Tagging
