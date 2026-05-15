@@ -6,7 +6,7 @@ It evaluates whether the Brill tagger, one of the earliest transformation-based 
 
 The study focuses on performance, robustness across languages, and the trade-off between rule-based and data-driven methods.
 
-A detailed academic report is included in the `report/` directory.
+A detailed report is included in the `report/` directory.
 
 
 ## Project Objectives
@@ -184,7 +184,7 @@ pos-tagging-project/
 ├── fr_test.col
 │
 ├── report/
-│   └── POS_tagging_comparative_study.pdf
+│   └── POS_tagging_comparative_study.pdf # LaTeX report
 │
 └── README.md
 ```
