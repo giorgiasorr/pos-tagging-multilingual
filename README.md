@@ -1,5 +1,4 @@
-# Evaluating the Brill Tagger Against Modern POS Tagging Techniques: 
-## A Comparative Study of Rule-Based, HMM, LSTM, and Logistic Regression Models
+# Evaluating the Brill Tagger Against Modern POS Tagging Techniques: A Comparative Study of Rule-Based, HMM, LSTM, and Logistic Regression Models
 
 This project presents a comparative study of classical and modern approaches to Part-of-Speech (POS) tagging across English, Italian, and French.
 
